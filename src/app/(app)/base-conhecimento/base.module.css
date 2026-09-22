@@ -56,10 +56,7 @@
    * medições: as duas únicas ocorrências dela no produto (`.cartao` do kanban, `.gatilho` do
    * seletor de espaço) vêm com borda, porque é objeto que SOBE — e esta faixa não tem borda;
    * e as duas moram DENTRO de um painel, enquanto esta faixa é renderizada fora de qualquer
-   * `.bloco`, direto sobre o `--fundo` do `.shell`.
-   *
-   * Os vizinhos da mesma família de tela concordam: `.tutorial` e `.andamento`, no
-   * `config.module.css`, são blocos informativos neutros com `--trilho` + `--r-controle`. */
+   * `.bloco`, direto sobre o `--fundo` do `.shell`. */
   background: var(--trilho);
   border-radius: var(--r-controle);
 }
@@ -83,8 +80,7 @@
 .link:hover { color: var(--acento-hover); }
 
 /* Link de texto dentro da faixa: é focável e não passa por componente nenhum, então o anel é
- * declarado aqui — na receita padrão do produto, a mesma do `.linkExterno` do
- * `config.module.css`. Sem ela o navegador desenha o dele, que no escuro é quase da cor da
+ * declarado aqui — na receita padrão do produto (o anel único de foco). Sem ela o navegador desenha o dele, que no escuro é quase da cor da
  * superfície. */
 .link:focus-visible {
   outline: 2px solid var(--acento);

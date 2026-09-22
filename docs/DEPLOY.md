@@ -171,9 +171,9 @@ PHARMA_SESSION_SECRET=kQ8vN2pX...48caracteresaleatorios
 PHARMA_SECRETS_KEY=mR4tZ9wL...outros48caracteres
 ```
 
-> ⚠️ **Cuidado com espaço sobrando ao colar.** O CRM apara os espaços em volta de toda chave
-> que lê, mas um espaço perdido na caixa de texto do EasyPanel já quebrou o primeiro acesso
-> de alguém: o log imprimia uma chave e o cadastro esperava outra.
+> ⚠️ **Cuidado com espaço sobrando ao colar.** O CRM apara os espaços em volta de toda variável
+> que lê, mas um espaço perdido na caixa de texto do EasyPanel já fez a validação recusar um
+> valor que parecia certo.
 
 ### 2.2 ⚠️ NÃO existe variável de build neste produto
 
@@ -248,11 +248,6 @@ Abra o app no EasyPanel → aba **Logs**. Num boot saudável você vê, nesta or
 ```
 [preflight] modo: normal
 
-========================================
-  CHAVE DO PRIMEIRO ACESSO: 3F9A21C7B04D
-  Use-a uma única vez, ao criar a conta do dono.
-========================================
-
 [migrate] Aplicando 0001_vault.sql…
 [migrate] Aplicando 0002_crm_nucleo.sql…
 ...
@@ -262,11 +257,6 @@ Abra o app no EasyPanel → aba **Logs**. Num boot saudável você vê, nesta or
 
 - **`[preflight] modo: normal`** = a configuração passou. Se aparecer `PROBLEMA` ou
   `modo: diagnostico`, vá pro §8.
-- **A CHAVE DO PRIMEIRO ACESSO — copie-a agora.** É ela que libera a criação da conta do dono
-  (§5), e ela **só aparece no log**, nunca numa página: se aparecesse na tela, qualquer um que
-  descobrisse o seu domínio poderia se tornar o dono do seu CRM. Ela não é perecível — é
-  **sempre a mesma** enquanto a sua `PHARMA_SESSION_SECRET` for a mesma, e reaparece a
-  cada boot. Trocou o segredo de sessão? A chave do primeiro acesso muda junto.
 - **`▲ Next.js  ✓ Ready`** é a linha de chegada. Se o log parar antes dela, o §8 resolve.
 - **O `N` do `OK` é literal:** ele é a quantidade de arquivos que a SUA versão traz, e
   **cresce a cada versão** nova do CRM — qualquer número ali é normal. O que importa é a
@@ -280,13 +270,13 @@ Abra o app no EasyPanel → aba **Logs**. Num boot saudável você vê, nesta or
 1. Abra o seu domínio. Numa instalação nova o CRM te leva direto pra tela de **cadastro** (não
    pro login — não haveria conta nenhuma pra usar), com o título **"Este é o seu Pharma CRM.
    Crie a conta do dono."**
-2. Preencha **e-mail** e **senha** (mínimo 6 caracteres), o **nome do workspace** e a **chave
-   do primeiro acesso** (a do §4 — pode colar em minúsculas ou com espaço sobrando).
+2. Preencha **e-mail**, **senha** (mínimo 6 caracteres) e o **nome do workspace**.
 3. **Criar conta.** Você já entra logado, com um funil de vendas pronto pra usar.
 
-Errou a chave? A tela diz isso e você tenta de novo — **errar não queima nada**. Depois que o
-dono existe, a **porta se fecha sozinha**: novos cadastros são recusados e o campo da chave
-some da tela (ela vira inútil, mesmo que alguém a leia no log).
+> ⚠️ **A primeira conta criada vira o dono do deploy — sem chave nenhuma protegendo esse
+> passo.** Depois que o dono existe, a **porta se fecha sozinha**: novos cadastros são
+> recusados. Mas enquanto ela não existe, **qualquer um que abra o seu domínio antes de você
+> pode virar o dono**. Faça este cadastro logo após o primeiro boot, antes de divulgar a URL.
 
 > **Preciso de uma segunda conta na equipe.** Vá em **Configurações → Pessoas**, escolha o
 > tipo de acesso e clique em **Gerar link**. Mande o link para a pessoa por onde preferir —
@@ -317,9 +307,6 @@ Não há nada pra reconfigurar: as variáveis continuam onde estão e os seus da
 seu Postgres, intactos. **As atualizações do banco são automáticas** — no boot o CRM aplica
 sozinho só o que faltava, **antes** do app subir; se alguma falhar, o container novo **não
 sobe** e o EasyPanel mantém a versão anterior no ar.
-
-A **CHAVE DO PRIMEIRO ACESSO** continua aparecendo no log a cada boot. É normal e inofensivo:
-depois que o dono existe, ela não abre mais nada.
 
 **Qual versão eu tenho?** No rodapé de **Configurações**. É a primeira coisa que o suporte
 pergunta.

@@ -1,10 +1,9 @@
 /* auth.module.css — a receita das telas FORA do shell. Kit v2.
  *
- * Usada por CINCO telas: `/entrar`, `/cadastrar`, `/convite/[token]`, `/sem-workspace` (esta
+ * Usada por QUATRO telas: `/entrar`, `/cadastrar`, `/convite/[token]` e `/sem-workspace` (esta
  * importa daqui desde 2026-08-05; antes tinha uma cópia byte a byte em
  * `sem-workspace.module.css`, que foi apagada — quatro cópias do mesmo cartão era o mesmo
- * defeito que o `.bloco` do `_crm` matou) e `/licenca` (a tela de bloqueio do engine, desde
- * 2026-08-06; ela só acrescenta o que é dela em `licenca/licenca.module.css`).
+ * defeito que o `.bloco` do `_crm` matou).
  *
  * 🔴 Esta lista é raio de impacto, não enfeite: quem edita aqui está contando quantas telas
  * vai mexer. Ela ficar velha é como uma quinta cópia nasce. A MESMA lista está no design

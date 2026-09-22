@@ -31,10 +31,10 @@ fim deste arquivo).
    `src/` é interno do produto e muda entre versões — o que você importar de lá funciona hoje
    e quebra depois de uma atualização, sem aviso.
 2. **Erro ao RODAR fica contido.** Se a sua tela quebra durante o uso, ela mostra o erro e só
-   ela: o resto do CRM, o boot e a atualização em 1 clique seguem funcionando.
+   ela: o resto do CRM e o boot seguem funcionando.
    - ⚠️ **Erro de SINTAXE é diferente**, assim como importar um pacote que não existe: os dois
      impedem o servidor de **reconstruir**. O CRM continua no ar na versão que já estava — mas
-     a próxima atualização fica parada em "aguardando" até você corrigir. A mensagem sai no log
+     a próxima atualização não entra no ar até você corrigir. A mensagem sai no log
      de build do painel (EasyPanel → Implantações), com arquivo e linha.
 3. **O seu código não é conferido pelo compilador do produto** — erro de tipo aparece só
    quando a tela roda. **Confira antes de subir** e você não cai em nenhum dos dois casos
@@ -122,9 +122,9 @@ nome do arquivo — de propósito: é melhor não subir do que aplicar na ordem 
 
 ## 🔴 Se a sua tabela guarda dado de cliente, o filtro é SEU
 
-**Isto mudou, e é a mudança mais importante para quem escreve aqui.** O CRM saiu do Supabase
-e passou a falar com um Postgres comum. Junto foi o `row level security`: sem GoTrue não
-existe `auth.uid()` dentro do banco, então não há sessão que uma policy possa enxergar.
+**Esta é a regra mais importante para quem escreve aqui.** O CRM fala com um Postgres comum,
+sem `row level security`: não existe `auth.uid()` dentro do banco, então não há sessão que
+uma policy possa enxergar.
 
 **O banco não isola mais nada. Quem isola é o seu código, em toda consulta.**
 
@@ -134,8 +134,8 @@ diferentes para lembrar:
 ```sql
 create table if not exists public.meus_contratos (
   id uuid primary key default gen_random_uuid(),
-  -- 🔴 A COLUNA CONTINUA OBRIGATÓRIA. Ela deixou de ser o que a policy lia e passou a ser
-  -- o que o SEU `.eq()` filtra — mas sem ela não há como separar um cliente do outro.
+  -- 🔴 A COLUNA É OBRIGATÓRIA. É ela que o SEU `.eq()` filtra — sem ela não há como
+  -- separar um cliente do outro.
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   titulo text not null,
   criado_em timestamptz not null default now()
@@ -146,7 +146,7 @@ create index if not exists meus_contratos_ws_idx on public.meus_contratos (works
 ```
 
 Não escreva `enable row level security` nem `create policy`: não há papel `authenticated`
-neste banco, e a função `public.e_membro()` não existe mais. Uma policy aqui seria decoração
+neste banco, nem função que diga quem está logado. Uma policy aqui seria decoração
 — passaria no `psql` e não protegeria nada.
 
 ### Como fica no código
@@ -163,14 +163,11 @@ await banco.from('meus_contratos').select().eq('workspace_id', workspaceId)
 ```
 
 **Esquecer o `.eq('workspace_id', …)` mostra o dado de um cliente para outro, sem nenhum
-aviso.** Antes a RLS aparava esse erro na leitura; agora não apara. Se você tem código de
-antes desta versão, é esse ponto que precisa ser revisado — as escritas já eram
-responsabilidade sua e continuam iguais; as **leituras** é que perderam a rede.
+aviso.** Nada no banco apara esse erro — nem na escrita, nem na leitura.
 
 ## `clienteDaSessao()` e `clienteSemIsolamento()`
 
-Os dois agora devolvem **o mesmo acesso ao banco**. `clienteSemIsolamento()` continua
-existindo com esse nome porque o nome passou a descrever os dois: nenhum isola.
+Os dois devolvem **o mesmo acesso ao banco** — nenhum isola.
 
 - `clienteDaSessao()` — em páginas e blocos, onde `usarSessao()` te dá o `workspaceId`.
 - `clienteSemIsolamento()` — em `custom/api/`, `custom/tarefas/` e `custom/eventos/`, onde

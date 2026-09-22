@@ -114,9 +114,8 @@
   font-size: var(--fs-body);
   line-height: var(--lh-body);
   color: var(--tinta-2);
-  /* `--trilho` + `--r-controle`: o mesmo par da faixa neutra da tela da base, e o mesmo que o
-   * `.tutorial` e o `.andamento` do `config.module.css` já usam para bloco informativo neutro
-   * nesta família de tela. */
+  /* `--trilho` + `--r-controle`: o mesmo par da faixa neutra da tela da base, que é o par de
+   * bloco informativo neutro nesta família de tela. */
   background: var(--trilho);
   border-radius: var(--r-controle);
 }

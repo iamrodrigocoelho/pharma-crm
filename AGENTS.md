@@ -51,27 +51,23 @@ substituídos pelos da versão nova. Por isso (se você é o COMPRADOR customiza
    Precisa de uma biblioteca do npm? Crie um `package.json` dentro da pasta `custom/` com as
    dependências dela. Elas são instaladas isoladamente e **não** tocam no `package.json` do
    produto — que você continua não podendo editar.
-4. **Toda tabela sua precisa de `workspace_id`, `enable row level security` e uma policy.**
-   O CRM é multi-inquilino e o isolamento é feito no banco, não no código: sem as três
-   coisas, o dado de um cliente seu aparece para outro, **sem nenhum aviso**. O
-   `custom/LEIA-ME.md` traz o modelo pronto para copiar.
-   - **Se você for guardar ARQUIVO, crie um bucket próprio e deixe-o privado**
-     (`public = false`). Bucket público serve qualquer objeto pela URL, sem passar por
-     policy nenhuma — documento de cliente ali é vazamento com endereço adivinhável.
-   - **Não escreva `create policy ... on storage.objects` numa migration.** Esse comando
-     exige ser dono da tabela, o papel da instalação pode não ser, e **migration que falha
-     impede o servidor de subir**. Você troca um recurso ausente por um CRM fora do ar.
-     Bucket privado já é fechado por padrão: quem lê é o servidor, não o navegador.
+4. **Toda tabela sua precisa de `workspace_id` (com índice).** O CRM é multi-inquilino e o
+   banco **não** isola nada: é essa coluna que o seu código filtra em toda consulta (regra 6).
+   Sem ela, não há como separar o dado de um cliente seu do de outro. O `custom/LEIA-ME.md`
+   traz o modelo pronto para copiar.
+   - **Não há armazenamento de arquivos para `custom/`.** Os arquivos do produto ficam numa
+     pasta do servidor, em áreas fixas (logo, anexos, mídia de conversa), e o
+     `@pharma/custom` não expõe nenhuma delas. Se te pediram para guardar arquivo, **pare e
+     peça** (regra 5).
    - **Toda instrução da sua migration precisa aguentar rodar DUAS vezes.** O CRM reaplica no
      boot qualquer migration que ele não encontre registrada, e uma instrução que falhe com
      "objeto já existe" **impede o servidor de subir** — não é a sua tabela que deixa de
      nascer, é o CRM inteiro que não volta. Use `if not exists` onde a linguagem aceita
      (`create table`, `create index`, `add column`). Onde ela **não** aceita — `create
-     policy`, `create trigger` e `alter table … add constraint` —, embrulhe a instrução num
-     bloco `do $$ … end $$;` que pergunte ao catálogo antes: `pg_policies` (por `schemaname`,
-     `tablename` e `policyname`), `pg_trigger` (por `tgname` e `tgrelid`) ou `pg_constraint`
-     (por `conname` e `conrelid`). Metade guardada é pior que nenhuma: ela convida à segunda
-     passada e falha no meio dela.
+     trigger` e `alter table … add constraint` —, embrulhe a instrução num bloco
+     `do $$ … end $$;` que pergunte ao catálogo antes: `pg_trigger` (por `tgname` e
+     `tgrelid`) ou `pg_constraint` (por `conname` e `conrelid`). Metade guardada é pior que
+     nenhuma: ela convida à segunda passada e falha no meio dela.
    - **`check` numa coluna DO PRODUTO: a sua sobrevive, e vale saber por quê.** Quando uma
      versão nova passa a aceitar valores novos numa coluna nossa (hoje é o caso de
      `canais.provider`, `conversas.status`, `mensagens.autor` e `mensagens.status`), a
@@ -114,10 +110,9 @@ substituídos pelos da versão nova. Por isso (se você é o COMPRADOR customiza
 6. **O banco NÃO isola espaços de trabalho. `.eq('workspace_id', …)` é obrigatório em TODA
    consulta sua** — select, insert, update e delete. Um `select` sem esse filtro devolve o
    dado de TODOS os clientes hospedados neste servidor, sem erro e sem aviso.
-   - Isto valia só para a escrita até a saída do Supabase. Com o `row level security` foi
-     embora a rede que aparava o esquecimento na **leitura**: não há `auth.uid()` num
-     Postgres comum, logo não há policy possível. Não escreva `enable row level security`
-     nem `create policy` em `custom/migrations/` — não protegeriam nada.
+   - Não há `row level security` como rede de segurança: num Postgres comum não existe
+     `auth.uid()`, logo não há policy possível. Não escreva `enable row level security` nem
+     `create policy` em `custom/migrations/` — não protegeriam nada.
    - `clienteDaSessao()` e `clienteSemIsolamento()` devolvem o **mesmo** acesso. A diferença
      é só de onde vem o `workspaceId`: em tela e bloco (`custom/paginas/`, `custom/slots/`)
      ele sai de `usarSessao()`; em `custom/api/`, `custom/tarefas/` e `custom/eventos/` não
@@ -143,19 +138,9 @@ substituídos pelos da versão nova. Por isso (se você é o COMPRADOR customiza
    - Se o que te pediram não couber nesses quatro campos, **pare e avise** — não resolva
      editando o tema.
 
-> **Nenhuma funcionalidade daqui é vendida à parte.** O CRM funciona inteiro, offline, para
-> sempre: não há tela, campo ou relatório que a licença destranque. Ela habilita só a
-> atualização em 1 clique; sem ela você atualiza pelo passo a passo do `docs/DEPLOY.md`, com o
-> produto inteiro funcionando.
+> **Não existe licença neste produto.** O CRM funciona inteiro, offline, para sempre: não há
+> chave, tela de bloqueio nem funcionalidade que se destranque pagando, e nada sai do servidor
+> por conta própria. Atualizar é pelo git, com o passo a passo do `docs/DEPLOY.md`.
 >
-> **O que a licença PODE fazer** é interromper o acesso em duas situações — reembolso dentro
-> da garantia, e instalação recente que ficou dias sem conseguir confirmar a licença. Nos dois
-> casos o CRM leva para uma tela única que explica e oferece a saída. Se você é um agente de
-> código e o CRM parou nessa tela, **isso não é bug do código nem coisa a consertar em
-> `custom/`**: é estado de licença, e quem resolve é o dono da instalação, em
-> Configurações → Servidor → Licença. O `docs/DEPLOY.md` descreve as duas.
->
-> Nesse estado a **API de integração** (`/api/v1/...`) também para, e responde **403** com
-> `{"error":{"code":"licenca_bloqueada"}}` — não confunda com o **401** `nao_autorizado`, que é
-> credencial errada ou ausente. O `/api/v1/echo` continua respondendo de propósito, para você
-> conseguir provar que a credencial está certa mesmo com o acesso interrompido.
+> Na **API de integração** (`/api/v1/...`), um **401** `nao_autorizado` é sempre credencial
+> errada ou ausente. Use o `/api/v1/echo` para provar que a credencial está certa.

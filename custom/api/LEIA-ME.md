@@ -53,13 +53,11 @@ export async function POST(req: Request) {
 ```
 
 Se quem chama é o navegador de alguém que já está logado no CRM, **não use isso**: use
-`usarSessao()` e `clienteDaSessao()` de `@pharma/custom`, e o isolamento é automático.
+`usarSessao()` e `clienteDaSessao()` de `@pharma/custom` — o `workspaceId` sai da sessão,
+mas o `.eq('workspace_id', …)` em toda consulta continua sendo seu (ver `../LEIA-ME.md`).
 
 ## O que vale saber
 
 - **Erro no seu código vira 500 com a mensagem**, e o servidor continua de pé. Endereço que
   não existe vira 404.
 - **Método não exportado vira 405.** Se você só exportou `GET`, um `POST` recebe 405.
-- **Estas rotas param quando a licença do CRM está bloqueada** (reembolso confirmado ou
-  instalação recente sem validar), com **403** e `{"error":{"code":"licenca_bloqueada"}}` —
-  igual às rotas `/api/v1` do produto. Não é bug do seu código.

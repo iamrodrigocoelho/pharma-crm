@@ -25,7 +25,7 @@
  * "vale pro servidor inteiro"), que é a informação que a tela precisa dar, vive no
  * `.blocoMeta` à direita do rótulo, na mesma linha.
  *
- * 🔴 MEDIDA. Todo campo desta tela ocupava os ~1150px do conteúdo — chave de licença,
+ * 🔴 MEDIDA. Todo campo desta tela ocupava os ~1150px do conteúdo — nome da marca,
  * "Novo tipo (ex.: Visita)", e-mail de convite, rótulo de credencial. Campo largo demais
  * atrapalha duas vezes: o olho perde a ligação entre o rótulo e a caixa, e a largura promete
  * um texto longo que ninguém vai digitar. O teto é UM só, no `.pagina` (760px), e todo texto
@@ -121,8 +121,8 @@
 }
 
 /* ⚠️ O `.bloco + .bloco { margin-top: --s-5 }` saiu: ele compunha com o `gap` do `.pagina`
- * os 32px que a regra de contenção ANTIGA pedia entre blocos sem moldura — sem ele, Licença e
- * Atualizações liam como um bloco só. Com caixa, quem separa é a borda, e o vão é o gap. */
+ * os 32px que a regra de contenção ANTIGA pedia entre blocos sem moldura. Com caixa, quem
+ * separa é a borda, e o vão é o gap. */
 
 /* Cabeçalho do painel. O recuo negativo devolve o cabeçalho à borda da caixa, e o
  * `min-height: var(--h-control)` FICA: ele garante que o cabeçalho de um bloco que carrega só
@@ -144,7 +144,7 @@
  *
  * SEM ÍCONE, como os `.blocoTitulo` do `_crm` e os `.subtitulo` de relatorios/automacoes.
  * Três dos cinco blocos desta tela tinham um (chave, seta circular, silhuetas) e dois não —
- * e os dois sem provavam que o ícone não estava informando nada: "Licença" já diz licença.
+ * e os dois sem provavam que o ícone não estava informando nada: "Equipe" já diz equipe.
  * Ícone aqui só existiria pra decorar o rótulo, e rótulo decorado é ruído — vale com caixa e
  * sem ela. Os ícones que sobraram são os dos DESTINOS, onde eles marcam alvos de clique. */
 .blocoTitulo {
@@ -300,7 +300,7 @@
   color: var(--tinta-3);
 }
 
-/* A frase de estado (licença, atualização): é o que a pessoa lê primeiro no bloco, então
+/* A frase de estado (ex.: "Marca salva"): é o que a pessoa lê primeiro no bloco, então
  * fica em `--tinta`. Não é título — não ganha peso de título. */
 .frase {
   max-width: 68ch;
@@ -589,98 +589,6 @@
 .selo.selo_alerta { background: var(--aviso-wash); color: var(--aviso); }
 .selo.selo_erro { background: var(--erro-wash); color: var(--erro); }
 
-/* A linha "selo + frase de estado": a pílula ao LADO do texto, não empilhada sobre ele.
- * Empilhada, ela custava uma linha inteira pra dizer em duas palavras o que a frase logo
- * abaixo já diz por extenso. */
-.linhaEstado {
-  display: flex;
-  align-items: baseline;
-  gap: var(--s-3);
-  flex-wrap: wrap;
-}
-
-/* ── Licença: os dados da chave ──────────────────────────────────────────────────────── */
-
-.licencaDados {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--s-2) var(--s-5);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-}
-.licencaDados dt { color: var(--tinta-3); }
-.licencaDados dd { margin: 0; color: var(--tinta-2); font-variant-numeric: tabular-nums; }
-.licencaDados code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--fs-body);
-  background: var(--trilho);
-  padding: var(--s-1) var(--s-2);
-  border-radius: var(--r-pequeno);
-}
-
-/* ── Atualizações: o tutorial é o conteúdo, não decoração ───────────────────────────── */
-
-/* Sem `max-width`: ele TEM borda, então a borda direita dele é visível e um teto próprio
- * criaria a segunda borda direita do bloco. `.ajuda` e `.frase`, que são texto sem moldura,
- * continuam em 68ch — texto para antes da margem sem que ninguém veja onde. */
-.tutorial {
-  border: 1px solid var(--linha);
-  border-radius: var(--r-controle);
-  padding: var(--s-3) var(--s-5);
-  background: var(--trilho);
-}
-.tutorial summary {
-  cursor: pointer;
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-  font-weight: 500;
-  color: var(--tinta-2);
-}
-.tutorial[open] summary { margin-bottom: var(--s-4); }
-
-.passos {
-  margin: 0;
-  padding-inline-start: var(--s-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-4);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-  color: var(--tinta-2);
-}
-.passos code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--fs-body);
-  background: var(--superficie);
-  border: 1px solid var(--linha);
-  padding: var(--s-1) var(--s-2);
-  border-radius: var(--r-pequeno);
-}
-.passos .ajuda { margin-block: var(--s-2) 0; display: block; }
-
-.linkExterno {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  font-weight: 500;
-  color: var(--acento);
-  text-decoration: none;
-}
-.linkExterno:hover { text-decoration: underline; }
-
-/* Bloco de progresso da atualização. A barra de 2px em `--acento` é o mesmo sinal do item de
- * nav ativo no rail: a dose de cor do v2 é a barra, não a laje. */
-.andamento {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  border: 1px solid var(--linha);
-  border-left: 2px solid var(--acento);
-  border-radius: var(--r-controle);
-  padding: var(--s-4) var(--s-5);
-  background: var(--trilho);
-}
-
 /* ── Tipos de atividade (/config/tipos-atividade) ─────────────────────────────────────
  *
  * A lista usa `.lista`/`.item`/`.acoes` acima como qualquer outra desta tela; só o que é
@@ -759,13 +667,11 @@
  * modo de alto contraste do Windows. Os três halos diferentes do v1 (3px, 4px e borda azul
  * sozinha) eram sombra fingindo foco, e não passam na barreira. */
 .destino:focus-visible,
-.linkExterno:focus-visible,
 /* As abas entram nesta lista, e não é detalhe: o teclado é a ÚNICA forma de usá-las sem
  * ponteiro, e "em tudo" é a regra deste bloco. Sem a linha, elas cairiam no anel padrão do
  * navegador — que muda de navegador e não é o do produto. */
 .aba:focus-visible,
-.abaAtiva:focus-visible,
-.tutorial summary:focus-visible {
+.abaAtiva:focus-visible {
   outline: 2px solid var(--acento);
   outline-offset: 2px;
 }

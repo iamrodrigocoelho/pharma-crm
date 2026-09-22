@@ -40,15 +40,19 @@ export default async function Contratos() {
   const { workspaceId } = await usarSessao()
   const db = await clienteDaSessao()
 
-  // Sua tabela, criada em custom/migrations/ com workspace_id + RLS (ver ../LEIA-ME.md).
-  // Com a policy no lugar, o filtro por espaço de trabalho é automático.
-  const { data } = await db.from('meus_contratos').select('id, titulo, valor')
+  // Sua tabela, criada em custom/migrations/ com workspace_id (ver ../LEIA-ME.md).
+  // 🔴 O filtro por espaço de trabalho é SEU: sem o .eq(), aparecem os contratos de
+  // todos os clientes hospedados neste servidor.
+  const { data } = await db
+    .from('meus_contratos')
+    .select('id, titulo, valor')
+    .eq('workspace_id', workspaceId)
 
   if (!data?.length) {
     return (
       <>
         <CabecalhoPagina titulo="Contratos" />
-        <EstadoVazio titulo="Nenhum contrato" descricao="Cadastre o primeiro." />
+        <EstadoVazio icone={null} titulo="Nenhum contrato" texto="Cadastre o primeiro." />
       </>
     )
   }
@@ -56,7 +60,7 @@ export default async function Contratos() {
   return (
     <>
       <CabecalhoPagina titulo="Contratos" subtitulo={`${data.length} no total`} />
-      <KpiCard label="Contratos" valor={String(data.length)} semSerie />
+      <KpiCard label="Contratos" valor={String(data.length)} />
     </>
   )
 }
@@ -68,7 +72,6 @@ export default async function Contratos() {
   espaço de trabalho ativo. Você não precisa checar login.
 - **Precisa de botão, formulário, estado?** Ponha `'use client'` na primeira linha do
   componente que precisa disso — é React e Next normais.
-- **Se a sua página quebrar, só ela quebra.** O resto do CRM (e a atualização em 1 clique)
-  continua funcionando. A mensagem do erro aparece na própria tela.
+- **Se a sua página quebrar, só ela quebra.** O resto do CRM continua funcionando. A mensagem do erro aparece na própria tela.
 - **Importe só de `@pharma/custom`.** O que está em `src/` é interno do produto e muda sem
   aviso entre versões. A lista completa do que você pode importar está no `../LEIA-ME.md`.

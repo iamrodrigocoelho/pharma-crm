@@ -8,9 +8,9 @@ import { lerConfig, gravarConfig } from '@/server/configuracoes'
 /** O braço da ZONA no tick: tarefas periódicas e ganchos de evento do comprador.
  *
  *  🔴 NUNCA LANÇA — e aqui isso vale mais do que nos outros braços. Este é o único que roda
- *  código que NÓS não escrevemos, e ele é o último da fila: automação, egress de webhook e
- *  licença já rodaram. Se lançasse, derrubaria a resposta do tick depois de o trabalho dos
- *  outros três já ter sido feito, e o heartbeat registraria "tick não-ok" para sempre.
+ *  código que NÓS não escrevemos, e ele é o último da fila: automação, egress de webhook,
+ *  canais e agente já rodaram. Se lançasse, derrubaria a resposta do tick depois de o trabalho
+ *  dos outros já ter sido feito, e o heartbeat registraria "tick não-ok" para sempre.
  *  Erro vira dado no resumo, no modelo exato de `tickAutomacao()`. */
 
 export const CHAVE_PORTEIRO = 'custom_eventos_ativos'

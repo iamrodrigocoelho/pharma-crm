@@ -7,7 +7,7 @@
 
 
 
-import { validarConfig, portaDeTransacao, tokenBootstrap } from './config-deploy.mjs'
+import { validarConfig, portaDeTransacao } from './config-deploy.mjs'
 import { decidirBanco, instrucaoDeAdocao, TABELAS_NUCLEO } from './preflight-adocao.mjs'
 import { recusaDoVector } from './preflight-vector.mjs'
 import { readdir } from 'node:fs/promises'
@@ -165,15 +165,6 @@ async function main() {
 
   if (r.problemas.length === 0) {
     imprimir(r, 'normal')
-    
-    
-    const token = tokenBootstrap(r.segredo)
-    if (token) {
-      console.log('\n========================================')
-      console.log('  CHAVE DO PRIMEIRO ACESSO: ' + token)
-      console.log('  Use-a uma única vez, ao criar a conta do dono.')
-      console.log('========================================\n')
-    }
     return 0
   }
 

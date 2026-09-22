@@ -4,7 +4,6 @@ import MarcaLockup from '@/components/MarcaLockup'
 import { lerMarca, tituloDaPagina } from '@/server/marca'
 import { registrar } from '@/server/auth/registrar'
 import { aceitarConvite } from '@/server/auth/convites'
-import { ehInstalacaoNova } from '@/server/auth/instalacao'
 import { entrar } from '@/server/auth/sessao'
 import CampoSenha from '../CampoSenha'
 import Botao from '@/components/ui/Botao'
@@ -30,7 +29,6 @@ const MENSAGENS: Record<string, string> = {
   convite_invalido:
     'O convite expirou, já foi usado ou o link está incorreto. Peça um novo ao administrador ' +
     'do espaço de trabalho — ou crie a sua própria conta abaixo.',
-  token_bootstrap_invalido: 'Chave do primeiro acesso incorreta. Ela está no log do container (EasyPanel → Logs).',
 }
 
 async function acaoCadastrar(formData: FormData): Promise<void> {
@@ -39,7 +37,6 @@ async function acaoCadastrar(formData: FormData): Promise<void> {
   const senha = String(formData.get('senha') ?? '')
   const nomeWorkspace = String(formData.get('nomeWorkspace') ?? '').trim()
   const convite = String(formData.get('convite') ?? '').trim()
-  const tokenInformado = String(formData.get('tokenBootstrap') ?? '')
 
   const voltar = (erro: string) => {
     const qs = new URLSearchParams({ erro })
@@ -52,7 +49,7 @@ async function acaoCadastrar(formData: FormData): Promise<void> {
 
   
   
-  const r = await registrar({ email, senha, nomeWorkspace, tokenInformado, convite })
+  const r = await registrar({ email, senha, nomeWorkspace, convite })
   if ('erro' in r) {
     
     
@@ -98,15 +95,6 @@ export default async function CadastrarPage({
   const { erro, convite, boasvindas } = await searchParams
   const temConvite = Boolean(convite)
   const boasVindas = boasvindas === '1' && !temConvite
-  
-  
-  
-  
-  
-  
-  
-  const primeiroCadastro =
-    !temConvite && (erro === 'token_bootstrap_invalido' || (await ehInstalacaoNova()))
   const marca = await lerMarca()
   const tema = await temaDaRequisicao()
   return (
@@ -171,23 +159,6 @@ export default async function CadastrarPage({
                 type="text"
                 autoComplete="organization"
                 placeholder="Minha Empresa"
-                required
-              />
-            </Campo>
-          )}
-
-          {primeiroCadastro && (
-            <Campo
-              id="tokenBootstrap"
-              rotulo="Chave do primeiro acesso"
-              ajuda="Está no log do container, no EasyPanel → Logs."
-            >
-              <Entrada
-                name="tokenBootstrap"
-                type="text"
-                autoComplete="off"
-                spellCheck={false}
-                placeholder="ABCDEF123456"
                 required
               />
             </Campo>

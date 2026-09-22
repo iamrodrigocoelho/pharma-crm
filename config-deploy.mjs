@@ -2,8 +2,6 @@
 // é consumido pelo preflight (boot do container), pela tela /diagnostico e pelo
 // cadastro. Antes descrevia três variáveis do Supabase; agora descreve as duas
 // que sobraram quando o app passou a falar com um Postgres qualquer.
-import { createHmac } from 'node:crypto'
-
 const PLACEHOLDERS = [/\[YOUR-PASSWORD\]/i, /\[YOUR_PASSWORD\]/i, /<PASSWORD>/i, /\[SUA-SENHA\]/i]
 
 const ONDE_ACHAR_DB =
@@ -84,12 +82,4 @@ export function validarConfig(env = {}) {
     avisos,
     todasAusentes: !dbUrl && !segredo,
   }
-}
-
-// Código de uso único que protege o PRIMEIRO cadastro (o dono do deploy). Deriva
-// do segredo de sessão, então quem controla o ambiente consegue lê-lo no preflight
-// e ninguém de fora consegue adivinhá-lo.
-export function tokenBootstrap(segredo) {
-  if (typeof segredo !== 'string' || segredo === '') return null
-  return createHmac('sha256', segredo).update('pharma-bootstrap').digest('hex').slice(0, 12).toUpperCase()
 }

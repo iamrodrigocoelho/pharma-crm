@@ -12,7 +12,7 @@ import {
  *  na tela (sincronização noturna, agente de IA que trabalha sozinho).
  *
  *  🔴 NUNCA LANÇA. Roda no `/api/interno/tick`, que também drena o egress de webhook (em
- *  produção) e bate a licença. Erro do comprador vira dado no resumo, nunca exceção.
+ *  produção), as automações e os canais. Erro do comprador vira dado no resumo, nunca exceção.
  *
  *  🔴 NÃO HÁ SESSÃO AQUI. O caminho de banco da tarefa é `clienteSemIsolamento()`, e o filtro
  *  por espaço de trabalho é responsabilidade de quem a escreveu — está no LEIA-ME da pasta.
@@ -45,7 +45,7 @@ export async function rodarTarefas(deps: DepsTarefas = {}): Promise<Record<strin
   let orcamento = orcamentoRestante(comeco, agora())
   if (orcamento <= 0) {
     // O tick já gastou o que tinha. A tarefa espera a próxima volta — é o que uma fila faz,
-    // e é melhor que roubar o tempo de quem roda antes (egress, licença).
+    // e é melhor que roubar o tempo de quem roda antes (automação, egress).
     resumo.pulado = 'sem folga no tick'
     return resumo
   }

@@ -3,19 +3,16 @@ import { db } from '@/server/db'
 import { reivindicarDonoDoDeploy } from '@/server/auth/dono-deploy'
 import { conviteEhValido } from '@/server/auth/convites'
 import { criarUsuario, excluirUsuario } from '@/server/auth/usuarios'
-import { tokenBootstrap } from '../../../config-deploy.mjs'
 
 
 
 
 type Resultado = { ok: true; workspaceId: string | null } | { erro: string }
 
-export async function registrar({ email, senha, nomeWorkspace, tokenInformado, convite }: {
+export async function registrar({ email, senha, nomeWorkspace, convite }: {
   email: string
   senha: string
   nomeWorkspace: string
-  tokenInformado?: string
-  
   convite?: string
 }): Promise<Resultado> {
   const banco = db()
@@ -47,26 +44,6 @@ export async function registrar({ email, senha, nomeWorkspace, tokenInformado, c
       .select('key')
     if (eClaim) return { erro: 'falha_bootstrap' } 
     ehBootstrap = (claim?.length ?? 0) > 0
-  }
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  if (ehBootstrap) {
-    const esperado = tokenBootstrap(
-      (process.env.PHARMA_SESSION_SECRET ?? process.env.AWAVE_SESSION_SECRET ?? '').trim(),
-    )
-    if (esperado && tokenInformado?.trim().toUpperCase() !== esperado) {
-      await banco.from('settings').update({ value: 'false' }).eq('key', 'bootstrap_feito')
-      return { erro: 'token_bootstrap_invalido' }
-    }
   }
 
   if (!ehBootstrap && !comConvite) {

@@ -48,7 +48,7 @@ export default async function limpar() {
   `fetch`**: `fetch(url, { signal: AbortSignal.timeout(8000) })`.
 - **20 segundos para todas juntas**, e menos que isso se o servidor já estiver ocupado. O que
   não coube fica para a próxima volta. Isso é de propósito: a mesma batida que roda suas
-  tarefas também entrega os webhooks e confere a licença, e nada seu pode atrasar isso.
+  tarefas também entrega os webhooks e roda as automações, e nada seu pode atrasar isso.
 - **Se a sua tarefa falhar, ela não é repetida na hora** — espera o intervalo normal. Uma
   tarefa quebrada não pode ficar tentando a cada 30 segundos para sempre.
 - **O erro vai para o log do servidor** (EasyPanel → Logs), não para a tela de ninguém.
